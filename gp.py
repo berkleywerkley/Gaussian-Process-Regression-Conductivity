@@ -27,6 +27,8 @@ def expected_improvement(x, gaussian_process, conductivity, n_params=3):
     x_to_predict = x.reshape(-1, n_params)
 
     mu, sigma = gaussian_process.predict(x_to_predict, return_std=True)
+    print('mu: ',mu)
+    print('sigma ', sigma)
 
     loss_optimum = np.max(conductivity)
 
@@ -45,7 +47,7 @@ def sample_next_hyperparameter(acquisition_func, gaussian_process, conductivity,
     Arguments:
     ----------
         acquisition_func: function.
-            Acquisition function to optimise.
+            Acquisition function to optimise. In this case it is the function 'expected improvement'
         gaussian_process: GaussianProcessRegressor object.
             Gaussian process trained on previously evaluated hyperparameters.
         evaluated_loss: array-like, shape = [n_obs,]
@@ -106,7 +108,7 @@ def bayesian_optimisation(data, bounds, n_iters=1, alpha=1e-5, epsilon=1e-7):
     yp = np.array(y_list)
 
     #create the GP
-    kernel = gp.kernels.Matern()
+    kernel = gp.kernels.Matern() #Matern Kernel assumes that function is at least once differentiable. The main assumption
     model = gp.GaussianProcessRegressor(kernel=kernel,
                                         alpha=alpha,
                                         n_restarts_optimizer=10,
